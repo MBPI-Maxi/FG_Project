@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+            {{ title }}
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/css/tabler.min.css">
+</head>
+
+<body>
+    {% include "incoming_fg_app/partials/_navbar.html" %}
+    
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include "incoming_fg_app/partials/_footer.html" %}
+    {% include 'incoming_fg_app/partials/_scripts.html' %}
+</body>
+
+</html>

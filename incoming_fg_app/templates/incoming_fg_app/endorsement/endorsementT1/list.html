@@ -1,0 +1,16 @@
+{% extends 'incoming_fg_app/base.html' %}
+
+
+{% block content %}
+    <h2>{{ title }}</h2>
+
+    <ul>
+        {% for endorsement in endorsements %}
+            <li>
+                {{ endorsement.t_refno }} - {{ endorsement.t_endorsedby }}
+            </li>
+        {% endfor %}    
+    </ul>
+    
+{% endblock content %}
+    
