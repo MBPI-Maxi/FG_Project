@@ -1,0 +1,44 @@
+# Python pycache all folders
+**/__pycache__/
+
+# Python bytecode
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+.venv/
+
+# Django migrations
+# include __init__.py in the migrations folder and exclude everything else
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# SQLite database (if used for dev)
+*.sqlite3
+
+# VSCode
+# include launch.json inside .vscode folder and exclude everything else
+.vscode/*.json
+!.vscode/launch.json
+.idea/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python test coverage
+.coverage
+htmlcov/
+*.cover
+
+# pipenv / poetry / etc.
+Pipfile.lock
+poetry.lock
+
+# Static files collected (if using collectstatic)
+staticfiles/
