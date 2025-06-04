@@ -1,0 +1,23 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}{{ title|default:"Incoming FG" }}{% endblock %}
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/css/tabler.min.css">
+</head>
+
+<body>
+    {% include "incoming_fg_app/partials/_navbar.html" %}
+    {% block incoming_fg_content %}{% endblock incoming_fg_content %}
+        
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js"></script>
+    
+    {% block incoming_fg_scripts %}{% endblock incoming_fg_scripts %}
+</body>
+
+</html>

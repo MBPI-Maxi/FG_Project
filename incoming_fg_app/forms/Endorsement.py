@@ -12,7 +12,6 @@ class EndorsementT1Form(forms.ModelForm):
             "t_prod_date",
             "t_category",
             "t_prodcode",
-            "t_fgpassedbeg_id",
             "t_lotnumberwhole",
             "t_qtykg",
             "t_wtlot",
@@ -38,10 +37,19 @@ class EndorsementT1Form(forms.ModelForm):
             ),
         }
 
+    def clean_t_prodcode(self):
+        prodcode = self.cleaned_data.get("t_prodcode")
+        valid_length = 16
+
+        if prodcode and len(prodcode) < valid_length:
+            raise forms.ValidationError("Production code should be at least 16-character product code matching master data")
+
+        return prodcode
+
     def clean_t_refno(self):
         refno = self.cleaned_data.get("t_refno")
 
-        if re.fullmatch(r"\d{7}", str(refno)):
+        if not re.fullmatch(r"\d{7}", str(refno)):
             raise forms.ValidationError("Reference number must be exactly 7 digits")
 
         return refno

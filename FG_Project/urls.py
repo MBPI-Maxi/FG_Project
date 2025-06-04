@@ -17,8 +17,10 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from .views import HomeView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("endorsement/", include("incoming_fg_app.views.endorsement.urls", namespace="endorsement"))
+    path("", HomeView.as_view(), name="home"),
+    path("endorsement/", include("incoming_fg_app.views.endorsement.urls", namespace="endorsement")),
 ]

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="container mt-5">
+  <div class="page-header mb-3">
+    <div class="container-xl">
+      <div class="row align-items-center">
+        <div class="col">
+          <h2 class="page-title">
+            {{ header_text }}
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="list-group mt-4">
+
+    {% comment %}
+    <!-- <a href="{% url 'incoming:form_list' %}" class="list-group-item list-group-item-action">
+      Incoming Finished Goods
+    </a>
+    <a href="{% url 'outgoing:form_list' %}" class="list-group-item list-group-item-action">
+      Outgoing Finished Goods
+    </a> -->
+    {% endcomment %}
+
+    <a href="{% url 'endorsement:create' %}" class="list-group-item list-group-item-action">
+      Incoming Finished Goods
+    </a>
+    <a href="#" class="list-group-item list-group-item-action">
+      Outgoing Finished Goods
+    </a>
+  </div>
+</section>
+{% endblock %}

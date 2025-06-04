@@ -40,12 +40,6 @@ class EndorsementT1(models.Model):
         blank=False
     )
 
-    t_fgpassedbeg_id = models.CharField(
-        null=True,
-        blank=True,
-        help_text="Mandatory field (cannot be null), foreign key for? (Foreign Key)",
-    )
-
     t_lotnumberwhole = models.CharField(
         max_length=20,
         validators=[
