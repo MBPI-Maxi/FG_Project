@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from incoming_fg_app.views.filters import EndorsementT1Filter
 from incoming_fg_app.models import EndorsementT1
 from incoming_fg_app.forms import EndorsementT1Form
+from django.core.paginator import Paginator
 
 class EndorsementT1CV(CreateView):
     model = EndorsementT1
@@ -23,6 +24,15 @@ class EndorsementT1CV(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = self.get_form()
+
+        endorsements_qs = EndorsementT1.objects.all().order_by("-created_at")
+        paginator = Paginator(endorsements_qs, 10)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        context["endorsements"] = page_obj.object_list
+        context["page_obj"] = page_obj
+        context["paginator"] = paginator
 
         context["title"] = "Create Endorsement"
         context["field_with_labels"] = zip(

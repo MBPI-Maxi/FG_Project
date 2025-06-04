@@ -1,0 +1,106 @@
+<div class="card">
+  <div class="card-body border-bottom py-3">
+    <div class="d-flex">
+      <div class="text-muted">
+        Showing
+        <span class="text-reset">{{ page_obj.start_index }} - {{ page_obj.end_index }}</span>
+        of
+        <span class="text-reset">{{ page_obj.paginator.count }}</span>
+        entries
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table card-table table-vcenter text-nowrap datatable">
+      <thead>
+        <tr>
+          <th>Ref No</th>
+          <th>Date Endorsed</th>
+          <th>Prod Date</th>
+          <th>Category</th>
+          <th>Product Code</th>
+          <th>Qty (KG)</th>
+          <th>Lot Number Range</th>
+          <th>Status</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for endorsement in endorsements %}
+        <tr>
+          <td>{{ endorsement.t_refno }}</td>
+          <td>{{ endorsement.t_date_endorsed }}</td>
+          <td>{{ endorsement.t_prod_date }}</td>
+          <td>{{ endorsement.t_category }}</td>
+          <td>{{ endorsement.t_prodcode }}</td>
+          <td>{{ endorsement.t_qtykg }}</td>
+          <td>{{ endorsement.t_lotnumberwhole }}</td>
+          <td>
+            <span class="badge text-white {% if endorsement.t_status == 'Passed' %}bg-green{% else %}bg-red{% endif %}">
+              {{ endorsement.t_status }}
+            </span>
+          </td>
+          <td>{{ endorsement.t_loc }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="text-center text-muted">No endorsements found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="card-footer d-flex align-items-center">
+    <p class="m-0 text-muted">
+      Page <span class="text-reset">{{ page_obj.number }}</span>
+      of <span class="text-reset">{{ paginator.num_pages }}</span>
+    </p>
+    <ul class="pagination m-0 ms-auto">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1&{{ request.GET.urlencode|safe|cut:'page=' }}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M11 7l-5 5l5 5" />
+            <path d="M17 7l-5 5l5 5" />
+          </svg>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link"
+          href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode|safe|cut:'page=' }}">Previous</a>
+      </li>
+      {% endif %}
+
+      {% for i in page_obj.paginator.page_range %}
+      {% if i >= page_obj.number|add:-2 and i <= page_obj.number|add:2 %} <li
+        class="page-item {% if i == page_obj.number %}active{% endif %}">
+        <a class="page-link" href="?page={{ i }}&{{ request.GET.urlencode|safe|cut:'page=' }}">{{ i }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link"
+            href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode|safe|cut:'page=' }}">
+            Next
+          </a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ paginator.num_pages }}&{{ request.GET.urlencode|safe|cut:'page=' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+              stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M7 7l5 5l-5 5" />
+              <path d="M13 7l5 5l-5 5" />
+            </svg>
+          </a>
+        </li>
+        {% endif %}
+    </ul>
+  </div>
