@@ -1,12 +1,15 @@
 <div class="card">
   <div class="card-body border-bottom py-3">
-    <div class="d-flex">
-      <div class="text-muted">
+    <div class="d-flex flex-column">
+      <div class="text-muted fst-italic">
         Showing
         <span class="text-reset">{{ page_obj.start_index }} - {{ page_obj.end_index }}</span>
         of
         <span class="text-reset">{{ page_obj.paginator.count }}</span>
         entries
+      </div>
+      <div class="text-muted text-sm fst-italic">
+        Showing latest entries first (sorted by newest date)
       </div>
     </div>
   </div>
