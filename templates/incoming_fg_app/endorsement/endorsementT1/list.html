@@ -1,26 +1,26 @@
 {% extends 'incoming_fg_app/base.html' %}
 
 {% block incoming_fg_content %}
-<div class="page-header">
-  <div class="container-xl">
-    <div class="row g-2 align-items-center">
-      <div class="col">
-        <h2 class="page-title">{{ title }}</h2>
+  <div class="page-header">
+    <div class="container-xl">
+      <div class="row g-2 align-items-center">
+        <div class="col">
+          <h2 class="page-title">{{ title }}</h2>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="page-body">
-  <div class="container-xl">
+  <div class="page-body">
+    <div class="container-xl">
 
-    <!-- Filter Form -->
-    {% include 'incoming_fg_app/partials/_endorsement_filter.html' %}
+      <!-- Filter Form -->
+      {% include 'incoming_fg_app/partials/_endorsement_filter.html' %}
 
-    <!-- table & pagination -->
-    {% include 'incoming_fg_app/partials/_endorsement_table.html' %}
-      
+      <!-- table & pagination -->
+      {% include 'incoming_fg_app/partials/_endorsement_table.html' %}
+        
+      </div>
     </div>
   </div>
-</div>
 {% endblock incoming_fg_content %}

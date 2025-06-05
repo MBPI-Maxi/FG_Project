@@ -14,7 +14,7 @@ class EndorsementT1Form(forms.ModelForm):
             "t_prodcode",
             "t_lotnumberwhole",
             "t_qtykg",
-            "t_wtlot",
+            # "t_wtlot",
             "t_endorsedby",
             "t_status",
             "t_loc",
@@ -78,13 +78,13 @@ class EndorsementT1Form(forms.ModelForm):
 
         return qty
 
-    def clean_t_wtlot(self):
-        wt = self.cleaned_data.get("t_wtlot")
+    # def clean_t_wtlot(self):
+    #     wt = self.cleaned_data.get("t_wtlot")
 
-        if wt < 0 and wt is not None:
-            raise forms.ValidationError("Weight per lot must be a positive number")
+    #     if wt < 0 and wt is not None:
+    #         raise forms.ValidationError("Weight per lot must be a positive number")
 
-        return wt
+    #     return wt
 
     def clean_t_endorsedby(self):
         endorsed_by = self.cleaned_data.get("t_endorsedby")

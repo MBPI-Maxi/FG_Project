@@ -52,11 +52,17 @@ class EndorsementT1(models.Model):
     )
 
     t_qtykg = models.DecimalField(
-        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.00"))]
+        max_digits=10, 
+        decimal_places=2, 
+        validators=[MinValueValidator(Decimal("0.00"))]
     )
 
     t_wtlot = models.DecimalField(
-        max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.00"))]
+        max_digits=10, 
+        decimal_places=2, 
+        validators=[MinValueValidator(Decimal("0.00"))],
+        null=True,
+        blank=True
     )
 
     t_endorsedby = models.CharField(

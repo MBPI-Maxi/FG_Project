@@ -11,19 +11,20 @@ class EndorsementT1CV(CreateView):
     model = EndorsementT1
     form_class = EndorsementT1Form
     template_name = "incoming_fg_app/endorsement/endorsementT1/form.html"
-    success_url = reverse_lazy("endorsement:list")  # using the namespace then the name
+    success_url = reverse_lazy("endorsement:create")  # using the namespace then the name
 
     def form_valid(self, form):
-        super().form_valid(form)
+        response = super().form_valid(form)
         messages.success(self.request, "Entry successfully created.")
-        context = self.get_context_data(form=self.get_form())
-        context["form_submitted"] = True
-
-        return self.render_to_response(context)
+        
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = self.get_form()
+        
+        # remove the t_wtlot so that it will not render on the html
+        form.fields.pop("t_wtlot", None)
 
         endorsements_qs = EndorsementT1.objects.all().order_by("-created_at")
         paginator = Paginator(endorsements_qs, 10)
@@ -36,9 +37,10 @@ class EndorsementT1CV(CreateView):
 
         context["title"] = "Create Endorsement"
         context["field_with_labels"] = zip(
-            form.visible_fields(), self.generate_context_labels(form)
+            form.visible_fields(), 
+            self.generate_context_labels(form)
         )
-
+        
         return context
 
     def generate_context_labels(self, form):
@@ -50,7 +52,7 @@ class EndorsementT1CV(CreateView):
             "Production Code",
             "Lot no. Whole",
             "QTY KG",
-            "Weight Lot",
+            # "Weight Lot",
             "Endorsed By",
             "Status",
             "Location",
@@ -58,7 +60,7 @@ class EndorsementT1CV(CreateView):
 
         if len(form.fields) == len(context_list):
             return context_list
-
+        
         raise ValueError("Context List is not the same length in fields of form.")
 
 class EndorsementT1LV(ListView):

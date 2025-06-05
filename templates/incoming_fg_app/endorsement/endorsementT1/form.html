@@ -2,61 +2,81 @@
 {% load static %}
 
 {% block incoming_fg_content %}
-  {% if messages %}
-    {% for message in messages %}
-      <div 
-        class="django-message"
-        data-message="{{ message|escapejs }}"
-        data-redirect="{% url 'endorsement:list' %}"
-        style="display: none;">
+<!-- alert message -->
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success alert-success-prompt alert-dismissible fade show" role="alert">
+      <div class="d-flex">
+        <div class="alert-icon me-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="icon alert-icon icon-2">
+            <path d="M5 12l5 5l10 -10" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="alert-heading">Wow! Everything worked!</h4>
+          <div class="alert-description">{{ message }}</div>
+        </div>
       </div>
-    {% endfor %}
-  {% endif %}
 
-  <div class="page-body">
-    <div class="container-xl">
-      <div class="row">
-        <!-- Form Column (Left) -->
-        <div class="col-md-5">
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">{{ title }}</h3>
-            </div>
-            <div class="card-body">
-              <form action="" method="post" id="endorsement-t1-form">
-                {% csrf_token %}
-                {% for field, label in field_with_labels %}
-                  <div class="mb-3">
-                    <label for="{{ field.id_for_label }}" class="form-label">
-                      {{ label }}
-                    </label>
-                    {{ field }}
-                    {% if field.errors %}
-                      <div class="invalid-feedback d-block">
-                        {{ field.errors|striptags }}
-                      </div>
-                    {% endif %}
-                  </div>
-                {% endfor %}
-                <div class="form-footer">
-                  <button type="submit" class="btn btn-primary">Create</button>
+      <!-- Dismiss button -->
+      <button 
+        type="button" 
+        class="btn-close" 
+        data-bs-dismiss="alert" 
+        aria-label="Close">
+      </button>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="page-body">
+  <div class="container-xl">
+    <div class="d-flex gap-3 align-items-start">
+
+      <!-- Form Column (Left) -->
+      <div style="min-width: 350px; max-width: 500px; flex-shrink: 0;">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">{{ title }}</h3>
+          </div>
+          <div class="card-body">
+            <form action="" method="post" id="endorsement-t1-form">
+              {% csrf_token %}
+              {% for field, label in field_with_labels %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                  {{ label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ field.errors|striptags }}
                 </div>
-              </form>
-            </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+              <div class="form-footer">
+                <button type="submit" class="btn btn-primary" id="endorsement-create-btn">
+                  Create
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        <!-- Table Column (Right) -->
-        <div class="col-md-7">
-          {% include 'incoming_fg_app/partials/_endorsement_table.html' %}
-        </div>
       </div>
+
+      <div class="flex-grow-1">
+        {% include 'incoming_fg_app/partials/_endorsement_table.html' %}
+      </div>
+
     </div>
   </div>
+</div>
 
-  {% include 'incoming_fg_app/partials/_modal.html' %}
 {% endblock %}
 
 {% block incoming_fg_scripts %}
-  <script src="{% static 'incoming_fg_app/js/script.js' %}"></script>
+<script src="{% static 'incoming_fg_app/js/script.js' %}"></script>
 {% endblock %}
