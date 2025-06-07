@@ -18,14 +18,17 @@ class EndorsementT1CV(CreateView):
         messages.success(self.request, "Entry successfully created.")
         
         return response
+    
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        messages.error(self.request, "There was an error in the form. Please fix it.")
+
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = self.get_form()
         
-        # remove the t_wtlot so that it will not render on the html
-        form.fields.pop("t_wtlot", None)
-
         endorsements_qs = EndorsementT1.objects.all().order_by("-created_at")
         paginator = Paginator(endorsements_qs, 10)
         page_number = self.request.GET.get("page")
@@ -36,8 +39,10 @@ class EndorsementT1CV(CreateView):
         context["paginator"] = paginator
 
         context["title"] = "Create Endorsement"
+        
+        field_to_show = [field for field in form.visible_fields() if field != "t_wtlot"]
         context["field_with_labels"] = zip(
-            form.visible_fields(), 
+            field_to_show,
             self.generate_context_labels(form)
         )
         
@@ -58,7 +63,12 @@ class EndorsementT1CV(CreateView):
             "Location",
         ]
 
-        if len(form.fields) == len(context_list):
+        copied_fields = form.fields.copy()
+        
+        # remove the hidden field t_wtlot 
+        copied_fields.pop("t_wtlot", None)
+        
+        if len(copied_fields) == len(context_list):
             return context_list
         
         raise ValueError("Context List is not the same length in fields of form.")

@@ -5,7 +5,11 @@
 <!-- alert message -->
 {% if messages %}
   {% for message in messages %}
-    <div class="alert alert-success alert-success-prompt alert-dismissible fade show" role="alert">
+     <div class="alert 
+                {% if message.tags == 'error' or message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}alert-danger alert-error-prompt
+                {% else %} alert-success alert-success-prompt
+                {% endif %} 
+                alert-dismissible fade show" role="alert">
       <div class="d-flex">
         <div class="alert-icon me-3">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -15,7 +19,14 @@
           </svg>
         </div>
         <div>
-          <h4 class="alert-heading">Wow! Everything worked!</h4>
+          <h4 class="alert-heading">
+            
+            {% if message.tags == "error" %}
+              Oops an error occured!
+            {% else %}
+              Wow! Everything worked!
+            {% endif %}
+          </h4>
           <div class="alert-description">{{ message }}</div>
         </div>
       </div>

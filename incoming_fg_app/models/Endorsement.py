@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MinLengthValidator
 from django.core.exceptions import ValidationError
 from decimal import Decimal
-from datetime import timedelta
 
 class EndorsementT1(models.Model):
     class Meta:
@@ -133,6 +132,7 @@ class EndorsementT2(models.Model):
     )
 
     t_encodedon = models.DateTimeField(
+        auto_now_add=True,
         help_text="Must be within 1 hour of parent record's timestamp"
     )
 
@@ -162,17 +162,6 @@ class EndorsementT2(models.Model):
                 raise ValidationError(
                     {
                         "t_qty": "Quantity cannot exceed the parent's total quantity (t_qtykg)"
-                    }
-                )
-
-        if self.t_refno and self.t_encodedon:
-            parent_time = self.t_refno.created_at
-            time_diff = abs(self.t_encodedon - parent_time)
-
-            if time_diff > timedelta(hours=1):
-                raise ValidationError(
-                    {
-                        "t_encodedon": "Encoded time must be within 1 hour of parent's created_at."
                     }
                 )
 

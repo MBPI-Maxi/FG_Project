@@ -1,7 +1,9 @@
 from django import forms
 from incoming_fg_app.models import EndorsementT1, EndorsementT2
 import re
-from datetime import timedelta
+# from datetime import timedelta
+from decimal import Decimal, ROUND_HALF_UP
+from incoming_fg_app.helpers.helper import lot_str_to_value
 
 class EndorsementT1Form(forms.ModelForm):
     class Meta:
@@ -14,7 +16,7 @@ class EndorsementT1Form(forms.ModelForm):
             "t_prodcode",
             "t_lotnumberwhole",
             "t_qtykg",
-            # "t_wtlot",
+            "t_wtlot",
             "t_endorsedby",
             "t_status",
             "t_loc",
@@ -35,6 +37,29 @@ class EndorsementT1Form(forms.ModelForm):
                     "placeholder": "YYYY-MM-DD",
                 }
             ),
+            "t_lotnumberwhole": forms.TextInput(
+                attrs={
+                    "placeholder": "8888AA-9999AA",
+                    "pattern": r"\d{4}[A-Z]{2}-\d{4}[A-Z]{2}",
+                    "title": "Format: 8888AA-9999AA",
+                    "class": "italic-placeholder"
+                }
+            ),
+            "t_prodcode": forms.TextInput(
+                attrs={
+                    "title": "16-digit code",
+                    "placeholder": "16-digit code",
+                    "class": "italic-placeholder"
+                }
+            ),
+            "t_refno": forms.TextInput(
+                attrs={
+                    "placeholder": "Must be 7 numbers",
+                    "title": "Must be 7 numbers",
+                    "class": "italic-placeholder"
+                }
+            ),
+            "t_wtlot": forms.HiddenInput(),
         }
 
     def clean_t_prodcode(self):
@@ -42,7 +67,9 @@ class EndorsementT1Form(forms.ModelForm):
         valid_length = 16
 
         if prodcode and len(prodcode) < valid_length:
-            raise forms.ValidationError("Production code should be at least 16-character product code matching master data")
+            raise forms.ValidationError(
+                "Production code should be at least 16-character product code matching master data"
+            )
 
         return prodcode
 
@@ -62,13 +89,38 @@ class EndorsementT1Form(forms.ModelForm):
 
         return category
 
+    # def clean_t_lotnumberwhole(self):
+    #     lot_range = self.cleaned_data.get("t_lotnumberwhole")
+
+    #     if not re.fullmatch(r"\d{4}[A-Z]{2}-\d{4}[A-Z]{2}", str(lot_range)):
+    #         raise forms.ValidationError("Lot range must be in the format 8888AA-9999AA")
+
+    #     return lot_range
+
     def clean_t_lotnumberwhole(self):
-        lot_range = self.cleaned_data.get("t_lotnumberwhole")
+        value = self.cleaned_data.get("t_lotnumberwhole")
+        pattern = r"^(\d{4})([A-Z]{2})-(\d{4})([A-Z]{2})$"
+        match = re.fullmatch(pattern, value)
 
-        if not re.fullmatch(r"\d{4}[A-Z]{2}-\d{4}[A-Z]{2}", str(lot_range)):
-            raise forms.ValidationError("Lot range must be in the format 8888AA-9999AA")
+        if not match:
+            raise forms.ValidationError("Lot number must follow the format 8888AA-9999AA")
 
-        return lot_range
+        num1, let1, num2, let2 = match.groups()
+
+        def lot_to_value(num, letters):
+            letter_value = (ord(letters[0]) - ord("A")) * 26 + (ord(letters[1]) - ord("A"))
+            return int(num) * 1000 + letter_value
+        
+        start_value = lot_to_value(num1, let1)
+        end_value = lot_to_value(num2, let2)
+        MAX_VALUE = 9999 * 1000 + (25 * 26 + 25)  # 9999ZZ max value
+
+        lot_diff = (end_value - start_value + MAX_VALUE) % MAX_VALUE
+
+        if lot_diff == 0:
+            raise forms.ValidationError("Start and end lot cannot be the same")
+
+        return value
 
     def clean_t_qtykg(self):
         qty = self.cleaned_data.get("t_qtykg")
@@ -77,14 +129,6 @@ class EndorsementT1Form(forms.ModelForm):
             raise forms.ValidationError("Quantity (kg) must be a positive number")
 
         return qty
-
-    # def clean_t_wtlot(self):
-    #     wt = self.cleaned_data.get("t_wtlot")
-
-    #     if wt < 0 and wt is not None:
-    #         raise forms.ValidationError("Weight per lot must be a positive number")
-
-    #     return wt
 
     def clean_t_endorsedby(self):
         endorsed_by = self.cleaned_data.get("t_endorsedby")
@@ -112,31 +156,47 @@ class EndorsementT1Form(forms.ModelForm):
 
         return loc
 
-    def clean_t_qty(self):
-        qty = self.cleaned_data.get("t_qty")
-
-        if qty is not None and qty < 0:
-            raise forms.ValidationError("Quantity must be a positive number.")
-
-        return qty
 
     def clean(self):
         cleaned_data = super().clean()
         prod_date = cleaned_data.get("t_prod_date")
         endorsed_date = cleaned_data.get("t_date_endorsed")
 
+        lot_range = cleaned_data.get("t_lotnumberwhole")
+        qty_kg = cleaned_data.get("t_qtykg")
+
         if prod_date and endorsed_date and prod_date > endorsed_date:
             self.add_error(
                 "t_prod_date",
                 "Prod date must be less than or equal to the endorsed date.",
             )
+        
+        # during this process the weight will be auto filled based on the lot range
+        if lot_range and qty_kg:
+            try:
+                start_lot_num, end_lot_num  = lot_range.split("-")
 
+                start_val = lot_str_to_value(start_lot_num)
+                end_val = lot_str_to_value(end_lot_num)
+                num_lots = (end_val - start_val) + 1 # +1 because the value is inclusive
 
+                wtlot = (Decimal(str(qty_kg)) / Decimal(str(num_lots))).quantize(
+    Decimal("0.00"),  # Ensures 2 decimal places
+    rounding=ROUND_HALF_UP  # Standard rounding (e.g., 1.235 → 1.24)
+)
+                cleaned_data["t_wtlot"] = wtlot # reassign the value here
+
+            except ValueError as e:
+                print(f"Error has occur: {e}")
+                raise forms.ValidationError("Error computing the wtlot value")
+        
+        return cleaned_data
+            
 class EndorsementT2Form(forms.ModelForm):
     class Meta:
         model = EndorsementT2
 
-        fields = ["t_refno", "t_lotnumbersingle", "t_qty", "t_encodedon"]
+        fields = ["t_refno", "t_lotnumbersingle", "t_qty"]
         widgets = {
             "t_encodedon": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
@@ -154,7 +214,7 @@ class EndorsementT2Form(forms.ModelForm):
 
         t_refno = cleaned_data.get("t_refno")
         t_qty = cleaned_data.get("t_qty")
-        t_encodedon = cleaned_data.get("t_encodedon")
+        # t_encodedon = cleaned_data.get("t_encodedon")
         t_lotnumbersingle = cleaned_data.get("t_lotnumbersingle")
 
         # Check if lot is in range of parent's lot range
@@ -178,12 +238,3 @@ class EndorsementT2Form(forms.ModelForm):
                 "t_qty", "Quantity cannot exceed the parent's total quantity (t_qtykg)."
             )
 
-        # Check if encoded time is within 1 hour of parent's created_at
-        if t_refno and t_encodedon:
-            parent_created = t_refno.created_at
-            
-            if abs(t_encodedon - parent_created) > timedelta(hours=1):
-                self.add_error(
-                    "t_encodedon",
-                    "Encoded time must be within 1 hour of the parent's creation time.",
-                )
