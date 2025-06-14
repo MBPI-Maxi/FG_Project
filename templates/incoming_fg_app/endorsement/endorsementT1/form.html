@@ -61,6 +61,13 @@
                   {{ label }}
                 </label>
                 {{ field }}
+                
+                {% if field.name == "t_lotnumberwhole" %}
+                  <div id="lot-number-whole-calculation">
+                    
+                  </div>
+                {% endif %}
+                  
                 {% if field.errors %}
                 <div class="invalid-feedback d-block">
                   {{ field.errors|striptags }}
@@ -79,7 +86,7 @@
       </div>
 
       <div class="flex-grow-1">
-        {% include 'incoming_fg_app/partials/_endorsement_table.html' %}
+        {% include 'incoming_fg_app/partials/_endorsement_table.html' with show_today_only=True %}
       </div>
 
     </div>
@@ -89,5 +96,5 @@
 {% endblock %}
 
 {% block incoming_fg_scripts %}
-<script src="{% static 'incoming_fg_app/js/script.js' %}"></script>
+  <script src="{% static 'incoming_fg_app/js/script.js' %}"></script>
 {% endblock %}

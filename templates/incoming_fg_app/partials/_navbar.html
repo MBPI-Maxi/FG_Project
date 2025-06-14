@@ -1,42 +1,42 @@
 {% block incoming_fg_content %}
-<nav>
-  <ul class="nav nav-tabs">
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'home' %}">Home</a>
-    </li>
-    <li class="nav-item dropdown">
-      <a 
-        class="nav-link dropdown-toggle" 
-        data-bs-toggle="dropdown" 
-        href="#" 
-        role="button"
-        aria-expanded="false"
-      >
-        Endorsement Forms
-      </a>
-      <ul class="dropdown-menu">
-        <li>
-          <a class="dropdown-item" href="{% url 'endorsement:create' %}">Create</a>
-        </li>
-        <li>
-          <a class="dropdown-item" href="#">Update</a>
-        </li>
-        <li>
-          <a class="dropdown-item" href="#">Delete</a>
-        </li>
-        <li>
-          <hr class="dropdown-divider" />
-        </li>
-        <li>
-          <a class="dropdown-item" href="{% url 'endorsement:list' %}">
-            List
-          </a>
-        </li>
-      </ul>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-    </li>
-  </ul>
-</nav>
+  <nav>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'home' %}">Home</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a 
+          class="nav-link dropdown-toggle" 
+          data-bs-toggle="dropdown" 
+          href="#" 
+          role="button"
+          aria-expanded="false"
+        >
+          Endorsement Forms
+        </a>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="{% url 'endorsement:create' %}">Create</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">Update</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">Delete</a>
+          </li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
+          <li>
+            <a class="dropdown-item" href="{% url 'endorsement:list' %}">
+              List
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+      </li>
+    </ul>
+  </nav>
 {% endblock %}

@@ -5,7 +5,8 @@ from django.urls import reverse_lazy
 from incoming_fg_app.views.filters import EndorsementT1Filter
 from incoming_fg_app.models import EndorsementT1
 from incoming_fg_app.forms import EndorsementT1Form
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from datetime import date
 
 class EndorsementT1CV(CreateView):
     model = EndorsementT1
@@ -21,7 +22,18 @@ class EndorsementT1CV(CreateView):
     
     def form_invalid(self, form):
         response = super().form_invalid(form)
-        messages.error(self.request, "There was an error in the form. Please fix it.")
+
+        # print(form.errors)
+        if "t_wtlot" in form.errors:
+           messages.error(
+               self.request,
+               "Error in the lot number. Left value should be less than the right value."
+           )
+        else:
+            messages.error(
+                self.request,
+                "Sorry for the inconvenience there was an error in backend."
+            )
 
         return response
 
@@ -29,6 +41,7 @@ class EndorsementT1CV(CreateView):
         context = super().get_context_data(**kwargs)
         form = self.get_form()
         
+        # full list context
         endorsements_qs = EndorsementT1.objects.all().order_by("-created_at")
         paginator = Paginator(endorsements_qs, 10)
         page_number = self.request.GET.get("page")
@@ -37,9 +50,18 @@ class EndorsementT1CV(CreateView):
         context["endorsements"] = page_obj.object_list
         context["page_obj"] = page_obj
         context["paginator"] = paginator
-
-        context["title"] = "Create Endorsement"
         
+        # for today only context
+        today_endorsements_qs = EndorsementT1.objects.filter(t_date_endorsed=date.today()).order_by("-created_at")
+        today_page_number = self.request.GET.get("today_page")
+        today_paginator = Paginator(today_endorsements_qs, 10)
+        today_page_obj = today_paginator.get_page(today_page_number)   
+            
+        context["today_only_endorsements"] = today_page_obj.object_list
+        context["today_page_obj"] = today_page_obj
+        context["today_paginator"] = today_paginator
+        
+        context["title"] = "Create Endorsement"
         field_to_show = [field for field in form.visible_fields() if field != "t_wtlot"]
         context["field_with_labels"] = zip(
             field_to_show,

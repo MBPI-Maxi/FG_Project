@@ -3,7 +3,7 @@ from incoming_fg_app.models import EndorsementT1, EndorsementT2
 import re
 # from datetime import timedelta
 from decimal import Decimal, ROUND_HALF_UP
-from incoming_fg_app.helpers.helper import lot_str_to_value
+from incoming_fg_app.helpers.helper import lot_str_to_value, lot_number_handler
 
 class EndorsementT1Form(forms.ModelForm):
     class Meta:
@@ -89,14 +89,6 @@ class EndorsementT1Form(forms.ModelForm):
 
         return category
 
-    # def clean_t_lotnumberwhole(self):
-    #     lot_range = self.cleaned_data.get("t_lotnumberwhole")
-
-    #     if not re.fullmatch(r"\d{4}[A-Z]{2}-\d{4}[A-Z]{2}", str(lot_range)):
-    #         raise forms.ValidationError("Lot range must be in the format 8888AA-9999AA")
-
-    #     return lot_range
-
     def clean_t_lotnumberwhole(self):
         value = self.cleaned_data.get("t_lotnumberwhole")
         pattern = r"^(\d{4})([A-Z]{2})-(\d{4})([A-Z]{2})$"
@@ -106,13 +98,11 @@ class EndorsementT1Form(forms.ModelForm):
             raise forms.ValidationError("Lot number must follow the format 8888AA-9999AA")
 
         num1, let1, num2, let2 = match.groups()
-
-        def lot_to_value(num, letters):
-            letter_value = (ord(letters[0]) - ord("A")) * 26 + (ord(letters[1]) - ord("A"))
-            return int(num) * 1000 + letter_value
+        start_lot = f"{num1}{let1}"
+        end_lot = f"{num2}{let2}"
         
-        start_value = lot_to_value(num1, let1)
-        end_value = lot_to_value(num2, let2)
+        start_value = lot_str_to_value(start_lot)
+        end_value = lot_str_to_value(end_lot)
         MAX_VALUE = 9999 * 1000 + (25 * 26 + 25)  # 9999ZZ max value
 
         lot_diff = (end_value - start_value + MAX_VALUE) % MAX_VALUE
