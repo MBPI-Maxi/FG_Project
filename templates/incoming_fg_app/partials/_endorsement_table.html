@@ -1,25 +1,36 @@
 <div class="card">
   <div class="card-body border-bottom py-3">
     <div class="d-flex flex-column">
-      <div class="text-muted fst-italic">
-        Showing
-
-        {% if show_today_only %}
+      {% if show_today_only %}
+        <div class="text-muted fst-italic">
+          Showing
           <span class="text-reset">{{ today_page_obj.start_index }} - {{ today_page_obj.end_index }}</span>
           of
           <span class="text-reset">{{ today_page.paginator.count }}</span>
           entries
-        {% else %}
+        </div>
+        
+        <div class="text-muted text-sm fst-italic">
+          <span class="text-reset">
+            Showing latest entries first (sorted by newest date) - As of {{ today_date }}
+          </span>
+        </div>
+        
+      {% else %}
+        <div class="text-muted fst-italic">
+          Showing
           <span class="text-reset">{{ page_obj.start_index }} - {{ page_obj.end_index }}</span>
           of
           <span class="text-reset">{{ page_obj.paginator.count }}</span>
           entries
-        {% endif %}
-          
-      </div>
-      <div class="text-muted text-sm fst-italic">
-        Showing latest entries first (sorted by newest date)
-      </div>
+        </div>
+
+        <div class="text-muted text-sm fst-italic">
+          <span class="text-reset">
+            Showing latest entries first (sorted by newest date)
+          </span>
+        </div>
+      {% endif %}
   </div>
 </div>
 
@@ -98,21 +109,21 @@
     </p>
     <ul class="pagination m-0 ms-auto">
       {% if today_page_obj.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?today_page=1&{{ request.GET.urlencode|safe|cut:'today_page=' }}">
-          <!-- First page icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
-            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M11 7l-5 5l5 5" />
-            <path d="M17 7l-5 5l5 5" />
-          </svg>
-        </a>
-      </li>
-      <li class="page-item">
-        <a class="page-link"
-          href="?today_page={{ today_page_obj.previous_page_number }}&{{ request.GET.urlencode|safe|cut:'today_page=' }}">Previous</a>
-      </li>
+        <li class="page-item">
+          <a class="page-link" href="?today_page=1&{{ request.GET.urlencode|safe|cut:'today_page=' }}">
+            <!-- First page icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+              stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M11 7l-5 5l5 5" />
+              <path d="M17 7l-5 5l5 5" />
+            </svg>
+          </a>
+        </li>
+        <li class="page-item">
+          <a class="page-link"
+            href="?today_page={{ today_page_obj.previous_page_number }}&{{ request.GET.urlencode|safe|cut:'today_page=' }}">Previous</a>
+        </li>
       {% endif %}
 
       {% for i in today_page_obj.paginator.page_range %}

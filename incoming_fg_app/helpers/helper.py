@@ -43,3 +43,31 @@ def lot_number_handler(
                 "Second letter must increment by 1 (e.g., AA -> AB)"
             )
 
+def increment_lot(lot):
+    num = int(lot[:4])
+    letter1 = lot[4]
+    letter2 = lot[5]
+
+    # Increment second letter
+    if letter2 != "Z":
+        letter2 = chr(ord(letter2) + 1)
+    else:
+        letter2 = "A"
+        # Increment first letter
+        if letter1 != "Z":
+            letter1 = chr(ord(letter1) + 1)
+        else:
+            letter1 = "A"
+            num += 1  # Roll over to next number
+
+    return f"{num:04d}{letter1}{letter2}"
+
+def count_lot_range(start_lot, end_lot):
+    current = start_lot
+    count = 1  # Include start_lot
+    while current != end_lot:
+        current = increment_lot(current)
+        count += 1
+        if count > 10000:  # Prevent infinite loop
+            raise ValueError("End lot is unreachable from start lot.")
+    return count

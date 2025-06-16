@@ -1,11 +1,11 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.db import transaction
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.core.exceptions import ValidationError
 
 from incoming_fg_app.models import EndorsementT1, EndorsementT2
-from incoming_fg_app.helpers.helper import lot_str_to_value, lot_value_to_str
+from incoming_fg_app.helpers.helper import lot_str_to_value, value_to_lot_str
 
 # signals for endorsement table 2 when endorsement table 1 is created
 @receiver(pre_save, sender=EndorsementT1)
@@ -28,8 +28,8 @@ def calculate_wtlot(sender, instance, **kwargs):
 
             # Calculate weight per lot (rounded to 2 decimals)
             instance.t_wtlot = (instance.t_qtykg / Decimal(num_lots)).quantize(
-                Decimal('0.00'), 
-                rounding='ROUND_HALF_UP'
+                Decimal("0.00"), 
+                rounding=ROUND_HALF_UP
             )
         
         except (ValueError, AttributeError) as e:
@@ -43,6 +43,8 @@ def create_t2_records(sender, instance, created, **kwargs):
     if created and instance.t_lotnumberwhole and instance.t_wtlot is not None:
         try:
             with transaction.atomic():
+                # IF EVER ADD A CONDITION HERE IF THE USER USES A LOT SINGLE FORMAT
+                
                 start_lot, end_lot = instance.t_lotnumberwhole.split('-')
                 current = lot_str_to_value(start_lot)
                 end_val = lot_str_to_value(end_lot)
@@ -54,7 +56,7 @@ def create_t2_records(sender, instance, created, **kwargs):
                     t2_instances.append(
                         EndorsementT2(
                             t_refno=instance,
-                            t_lotnumbersingle=lot_value_to_str(current),
+                            t_lotnumbersingle=value_to_lot_str(current),
                             t_qty=instance.t_wtlot
                         )
                     )

@@ -25,11 +25,13 @@ class EndorsementT1CV(CreateView):
 
         # print(form.errors)
         if "t_wtlot" in form.errors:
+           print(form.errors)
            messages.error(
                self.request,
                "Error in the lot number. Left value should be less than the right value."
            )
         else:
+            print(form.errors)
             messages.error(
                 self.request,
                 "Sorry for the inconvenience there was an error in backend."
@@ -56,10 +58,12 @@ class EndorsementT1CV(CreateView):
         today_page_number = self.request.GET.get("today_page")
         today_paginator = Paginator(today_endorsements_qs, 10)
         today_page_obj = today_paginator.get_page(today_page_number)   
+        today_date = date.today()
             
         context["today_only_endorsements"] = today_page_obj.object_list
         context["today_page_obj"] = today_page_obj
         context["today_paginator"] = today_paginator
+        context["today_date"] = today_date
         
         context["title"] = "Create Endorsement"
         field_to_show = [field for field in form.visible_fields() if field != "t_wtlot"]
@@ -77,7 +81,7 @@ class EndorsementT1CV(CreateView):
             "Production Date",
             "Category",
             "Production Code",
-            "Lot no. Whole",
+            "Lot Number",
             "QTY KG",
             # "Weight Lot",
             "Endorsed By",
@@ -89,10 +93,11 @@ class EndorsementT1CV(CreateView):
         
         # remove the hidden field t_wtlot 
         copied_fields.pop("t_wtlot", None)
+        copied_fields.pop("use_single_lot", None)
         
         if len(copied_fields) == len(context_list):
             return context_list
-        
+        # return context_list
         raise ValueError("Context List is not the same length in fields of form.")
 
 class EndorsementT1LV(ListView):

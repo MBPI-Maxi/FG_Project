@@ -2,6 +2,18 @@ from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MinLengthValidator
 from django.core.exceptions import ValidationError
 from decimal import Decimal
+import re
+
+# validates the lot number
+def validate_lot_number(value):
+    pattern_range = r"^\d{4}[A-Z]{2}-\d{4}[A-Z]{2}$"
+    pattern_single = r"^\d{4}[A-Z]{2}$"
+    
+    if not re.fullmatch(pattern_range, value) and not re.fullmatch(pattern_single, value):
+        raise ValidationError(
+            "Lot number must be in the format 8888AA or 8888AA-9999AA",
+            code="invalid_lot_format"
+        )
 
 class EndorsementT1(models.Model):
     class Meta:
@@ -19,7 +31,8 @@ class EndorsementT1(models.Model):
         help_text="Reference number must be exactly 7 digits",
         unique=True,
         null=False,
-        blank=False
+        blank=False,
+        # max_length=7
     )
 
     t_date_endorsed = models.DateField()
@@ -41,13 +54,8 @@ class EndorsementT1(models.Model):
 
     t_lotnumberwhole = models.CharField(
         max_length=20,
-        validators=[
-            RegexValidator(
-                regex=r"^\d{4}[A-Z]{2}-\d{4}[A-Z]{2}$",
-                message="Lot range must be in the format 8888AA-9999AA",
-                code="Lot range format mismatch (8888AA-9999AA)",
-            )
-        ],
+        validators=[validate_lot_number],
+        help_text="Must match either 8888AA-9999AA or 8888AA format"
     )
 
     t_qtykg = models.DecimalField(
@@ -57,7 +65,7 @@ class EndorsementT1(models.Model):
     )
 
     t_wtlot = models.DecimalField(
-        max_digits=10, 
+        max_digits=12, 
         decimal_places=2, 
         validators=[MinValueValidator(Decimal("0.00"))],
         null=True,

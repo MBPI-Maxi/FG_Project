@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   alertMessageDuration();
   showBox();
+  lotNumberToggleEvent();
 });
 
 function alertMessageDuration() {
@@ -42,13 +43,42 @@ function showBox() {
             emptyLotNumberCtn.classList.add("text-danger");
           }
 
-        } else {
+        } 
+        
+        else if (/^\d{4}[A-Z]{2}$/.test(value)) {
+          const element = document.createElement("span");
+          
+          emptyLotNumberCtn.classList.remove("text-danger");
+          
+          element.textContent = "Single lot detected. Lot difference: 1";
+          
+          emptyLotNumberCtn.appendChild(element);
+        }
+        
+        else {
           emptyLotNumberCtn.classList.add("text-danger");
-          emptyLotNumberCtn.textContent = "Invalid lot number format (e.g., 1234-1235).";
+          emptyLotNumberCtn.textContent = "Invalid lot number format. Should be either '8888AA-9999AA' or '8888AA'";
         }
       }
     } catch (error) {
       return;
     }
   });
+}
+
+function lotNumberToggleEvent() {
+  const lotToggle = document.getElementById("lot-toggle");
+  const lotInput = document.getElementById("id_t_lotnumberwhole");
+  
+  lotToggle.addEventListener("change", () => {    
+    
+    if (lotToggle.checked) {
+      lotInput.placeholder = "8888AA"
+      lotInput.title = "Format: 8888AA"
+    } else {
+      lotInput.placeholder = "8888AA-9999AA"
+      lotInput.title = "Format: 8888AA-9999AA"
+    }
+
+  })
 }
