@@ -170,169 +170,35 @@ class EndorsementT1Form(forms.ModelForm):
 
                 try:
                     num_lots = count_lot_range(start_lot, end_lot)
-                    wtlot = (Decimal(str(qty_kg)) / Decimal(str(num_lots))).quantize(
-                        Decimal("0.01"), rounding=ROUND_HALF_UP
-                    )
-                    cleaned_data["t_wtlot"] = wtlot
+                    
+                    # wtlot computation
+                    wtlot = qty_kg / num_lots
+
+                    # reassign the wtlot value to the t_wtlot column in the db
+                    cleaned_data["t_wtlot"] = wtlot                    
+                    
                 except Exception as e:
                     print(f"Error: {e}")
                     raise forms.ValidationError("Error computing the wtlot value")
-
             else:
+                # this is of the single lot number
                 if not re.fullmatch(r"^\d{4}[A-Z]{2}$", lot_whole):
                     self.add_error(
                         "t_lotnumberwhole", "Single lot must be in the format 8888AA"
                     )
                     return cleaned_data
 
+                # this will need to be assumed the wtlot is as is.
                 wtlot = Decimal(str(qty_kg)).quantize(
                     Decimal("0.01"), rounding=ROUND_HALF_UP
                 )
+
+                # so if the user input a single lot it will only count as a single lot then turn it into a decimal.
+
                 cleaned_data["t_wtlot"] = wtlot
 
             return cleaned_data
-        # if qty_kg:
-        #     if not use_single_lot:
-        #         # Validate 8888AA-9999AA
-        #         pattern = r"^(\d{4})([A-Z]{2})-(\d{4})([A-Z]{2})$"
-        #         match = re.fullmatch(pattern, lot_whole)
-
-        #         if not match:
-        #             self.add_error(
-        #                 "t_lotnumberwhole",
-        #                 "Lot number must follow the format 8888AA-9999AA",
-        #             )
-        #             return cleaned_data
-
-        #         num1, let1, num2, let2 = match.groups()
-        #         start_lot = f"{num1}{let1}"
-        #         end_lot = f"{num2}{let2}"
-
-        #         start_value = lot_str_to_value(start_lot)
-        #         end_value = lot_str_to_value(end_lot)
-        #         # MAX_VALUE = 9999 * 1000 + (25 * 26 + 25)
-                
-        #         lot_diff = end_value - start_value
-        #         # lot_diff = (end_value - start_value + MAX_VALUE) % MAX_VALUE
-
-        #         if lot_diff == 0:
-        #             self.add_error(
-        #                 "t_lotnumberwhole", "Start and end lot cannot be the same"
-        #             )
-        #             return cleaned_data
-
-        #         num_lots = lot_diff + 1  # Inclusive
-                
-        #         try:
-        #             # wtlot = (Decimal(str(qty_kg)) / Decimal(str(num_lots))).quantize(
-        #             #     Decimal("0.00"), 
-        #             #     rounding=ROUND_HALF_UP
-        #             # )
-        #             wtlot = (Decimal(str(qty_kg)) / Decimal(str(num_lots))).quantize(
-        #                 Decimal("0.01"), rounding=ROUND_HALF_UP
-        #             )
-                    
-        #             wtlot = round(float(qty_kg) / float(num_lots), 2)
-        #             print(wtlot)
-        #             cleaned_data["t_wtlot"] = wtlot
-        #         except Exception as e:
-        #             print(f"Error: {e}")
-        #             raise forms.ValidationError("Error computing the wtlot value")
-
-        #     else:
-        #         # Validate 8888AA
-        #         if not re.fullmatch(r"^\d{4}[A-Z]{2}$", lot_whole):
-        #             self.add_error(
-        #                 "t_lotnumberwhole", "Single lot must be in the format 8888AA"
-        #             )
-
-        #             return cleaned_data
-
-        #         wtlot = Decimal(str(qty_kg)).quantize(
-        #             Decimal("0.00"), 
-        #             rounding=ROUND_HALF_UP
-        #         )
-
-        #         cleaned_data["t_wtlot"] = wtlot
-
-        #         return cleaned_data
-        # cleaned_data = super().clean()
-        # prod_date = cleaned_data.get("t_prod_date")
-        # endorsed_date = cleaned_data.get("t_date_endorsed")
-        # # lot_range = cleaned_data.get("t_lotnumberwhole")
-
-        # use_single_lot = cleaned_data.get("use_single_lot")
-        # lot_whole = cleaned_data.get("t_lotnumberwhole")
-        # qty_kg = cleaned_data.get("t_qtykg")
-
-        # if prod_date and endorsed_date and prod_date > endorsed_date:
-        #     self.add_error(
-        #         "t_prod_date",
-        #         "Prod date must be less than or equal to the endorsed date",
-        #     )
-
-        # if not lot_whole:
-        #     self.add_error("t_lotnumberwhole", "Lot number is required")
-
-        # # during this process the weight will be auto filled based on the lot range if lot whole is available during the form.
-        # if lot_whole and qty_kg and not use_single_lot:
-        #     try:
-        #         # logic for clean_t_lotnumberwhole method
-        #         pattern = r"^(\d{4})([A-Z]{2})-(\d{4})([A-Z]{2})$"
-        #         match = re.fullmatch(pattern, lot_whole)
-
-        #         if not match:
-        #             self.add_error("t_lotnumberwhole", "Lot number must follow the format 8888AA-9999AA")
-        #             return cleaned_data
-
-        #         num1, let1, num2, let2 = match.groups()
-        #         start_lot = f"{num1}{let1}"
-        #         end_lot = f"{num2}{let2}"
-
-        #         start_value = lot_str_to_value(start_lot)
-        #         end_value = lot_str_to_value(end_lot)
-        #         MAX_VALUE = 9999 * 1000 + (25 * 26 + 25)
-        #         lot_diff = (end_value - start_value + MAX_VALUE) % MAX_VALUE
-
-        #         if lot_diff == 0:
-        #             self.add_error("t_lotnumberwhole", "Start and end lot cannot be the same")
-        #             return cleaned_data
-
-        #         # splitting of the lot whole ranges
-        #         start_lot_num, end_lot_num  = lot_whole.split("-")
-
-        #         start_val = lot_str_to_value(start_lot_num)
-        #         end_val = lot_str_to_value(end_lot_num)
-        #         num_lots = (end_val - start_val) + 1 # +1 because the value is inclusive
-
-        #         wtlot = (Decimal(str(qty_kg)) / Decimal(str(num_lots))).quantize(
-        #             Decimal("0.00"),  # Ensures 2 decimal places
-        #             rounding=ROUND_HALF_UP  # Standard rounding (e.g., 1.235 → 1.24)
-        #         )
-
-        #         cleaned_data["t_wtlot"] = wtlot # reassign the value here
-
-        #     except ValueError as e:
-        #         print(f"Error has occur: {e}")
-        #         raise forms.ValidationError("Error computing the wtlot value")
-
-        # elif lot_whole and qty_kg and use_single_lot:
-        #      # validate for format of 8888AA
-        #     pattern = r"\d{4}[A-Z]{2}"
-
-        #     if not re.fullmatch(pattern, lot_whole):
-        #         self.add_error("t_lotnumberwhole", "Single lot must be in the format 8888AA")
-        #     else:
-        #         if qty_kg:
-        #             wtlot = Decimal(str(qty_kg)).quantize(
-        #                 Decimal("0.00"),
-        #                 ROUND_HALF_UP
-        #             )
-
-        #             cleaned_data["t_wtlot"] = wtlot
-
-        # return cleaned_data
-
+        
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance._use_single_lot = self.cleaned_data.get(

@@ -1,3 +1,6 @@
+from decimal import Decimal, ROUND_HALF_UP
+from typing import Type
+
 def lot_str_to_value(lot_str):
     num = int(lot_str[:4])
     letters = lot_str[4:]
@@ -71,3 +74,23 @@ def count_lot_range(start_lot, end_lot):
         if count > 10000:  # Prevent infinite loop
             raise ValueError("End lot is unreachable from start lot.")
     return count
+
+def count_lot_range(start_lot: str, end_lot: str) -> Type[Decimal]:
+    inclusive_number = 1
+ 
+    start_lot = start_lot[0:4]
+    end_lot = end_lot[0:4]
+
+    start_lot_decimal = Decimal(start_lot).quantize(
+        exp=Decimal("0.01"),
+        rounding=ROUND_HALF_UP
+    )
+    end_lot_decimal = Decimal(end_lot).quantize(
+        exp=Decimal("0.01"),
+        rounding=ROUND_HALF_UP
+    )
+
+    lots = (end_lot_decimal - start_lot_decimal) + inclusive_number
+    
+    return lots
+    

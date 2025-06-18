@@ -52,7 +52,8 @@ class EndorsementT1CV(CreateView):
         context["endorsements"] = page_obj.object_list
         context["page_obj"] = page_obj
         context["paginator"] = paginator
-        
+        context["endorsement_qs"] = endorsements_qs
+
         # for today only context
         today_endorsements_qs = EndorsementT1.objects.filter(t_date_endorsed=date.today()).order_by("-created_at")
         today_page_number = self.request.GET.get("today_page")
