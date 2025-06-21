@@ -1,0 +1,58 @@
+Production 
+Steps:
+-	FG endorsement form
+-	Incoming ng warehouse (+)
+-	(note: after 3 days (max) from lab)
+
+-	Result of the lab
+
+o	Either the finished goods are pass or fail
+o	 If pass program will continue to operate as usual (P)
+	All passed are transferred to warehouse 2 
+	Delivery Receipt Form created by production for delivery
+	Production delivery FG to customer
+	If item is successful transaction ends there.
+	If item is returned due to non-compliance
+•	RR form filled up on warehouse and received by the warehouse this falls automatically if customer demands FG replacement
+•	If customer demands replacement a production will create a RRF form.
+
+
+Production
+Steps:
+ - *FG Endorsement Form
+ - Incoming ng warehouse (+)
+ - (after 3 days (max) from lab)
+
+ - Result of the lab
+ 	- Either the finished goods are pass or fail
+	- If pass program will continue to operate as usual (P)
+		- All passed are transferred to warehouse 2
+		- *Delivery receipt form created by the production for delivery
+		- production will deliver the FG to the customer
+		- if item is returned due to non - compliance
+			- *RR form is created and filled up on the warehouse and received by the warehouse this falls automatically as FAILED product
+            - if customer demands FG REPLACEMENT
+                - production create an *RRF form
+    
+    - If failed the program will.(F)
+        - Lab will need to correct failed items
+            - either to undergo: activity(Tumbler, MIX, and Completion)
+                - production will issue a production form for activities such as 'Tumbler' 'Mix', 'production', 'completion'
+                - warehouse will log all outgoing FG in outgoing form. 
+            - either to undergo items that needs activity of completion:
+                - warehouse head issues a completion form
+                - warehouse to log outgoing in *FP Outgoing RF
+
+
+            - if the lab cannot correct the failed items the QC will release a failed endorsement sheet.
+                - all failed items will be stored in warehouse 1, if FG is greater than 1 month it will be put on warehouse 5
+        - The FG can also have a retest with approval of Mr. Elton or approval from Mr. Ernie
+        - This will produce a new result
+            - which in turn will generate the *QC Failed to Passed endorsement sheet by the lab.
+            - this item will need to be transfer to warehouse 2
+
+NOTES:
+    For activities:
+        Tumbler = failed to pass or failed to failed
+        Mix = Pass to Pass ( note: 6 kilo pababa yung requirements nito )
+        Completion = Pass to Pass ( note: 5 kilo pataas yung requirements nito. )
