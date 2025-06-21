@@ -1,22 +1,3 @@
-Production 
-Steps:
--	FG endorsement form
--	Incoming ng warehouse (+)
--	(note: after 3 days (max) from lab)
-
--	Result of the lab
-
-o	Either the finished goods are pass or fail
-o	 If pass program will continue to operate as usual (P)
-	All passed are transferred to warehouse 2 
-	Delivery Receipt Form created by production for delivery
-	Production delivery FG to customer
-	If item is successful transaction ends there.
-	If item is returned due to non-compliance
-•	RR form filled up on warehouse and received by the warehouse this falls automatically if customer demands FG replacement
-•	If customer demands replacement a production will create a RRF form.
-
-
 Production
 Steps:
  - *FG Endorsement Form
